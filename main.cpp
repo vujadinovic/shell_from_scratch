@@ -6,6 +6,16 @@
 
 using namespace std;
 
+void exit_shell(const vector<string>& args);
+void echo(const vector<string>& args);
+void type(const vector<string>& args);
+
+unordered_map<string, void(*)(const vector<string>&)> BUILTINS = {
+    {"exit", exit_shell},
+    {"echo", echo},
+    {"type", type}
+};
+
 
 void exit_shell(const vector<string>& args) {
   if(args.size() == 1)
@@ -23,16 +33,29 @@ void echo(const vector<string>& args) {
   cout << endl;
 }
 
+void type(const vector<string>& args) {
+  if (args.empty()) {
+        cout << "type: missing argument\n";
+        return;
+  }
+  const string command = args[0];
+
+  if (BUILTINS.find(command) != BUILTINS.end()) {
+        cout << command << " is a shell builtin\n";
+        return;
+  }
+  else {
+    cout << command << ": not found" << endl;
+  }
+    
+}
+
 
 int main() {
   // Flush after every std::cout / std:cerr
   cout << unitbuf;
   cerr << unitbuf;
 
-  unordered_map<string, void(*)(const vector<string>&)> BUILTINS = {
-    {"exit", exit_shell},
-    {"echo", echo}
-  };
 
   while(true) {
     cout << "$ ";
@@ -61,9 +84,6 @@ int main() {
     else {
       BUILTINS[command](args);
     }
-    
   }
-
-
   return 0;
 }
