@@ -3,7 +3,16 @@
 #include <sstream>
 #include <vector>
 #include <unordered_map>
+#include <filesystem>
 
+#ifdef _WIN32
+    const char PATH_SEPARATOR = ';';
+#else
+    const char PATH_SEPARATOR = ':';
+#endif
+
+
+namespace fs = std::filesystem;
 using namespace std;
 
 void exit_shell(const vector<string>& args);
@@ -45,9 +54,17 @@ void type(const vector<string>& args) {
         return;
   }
   else {
-    cout << command << ": not found" << endl;
+    char* path = getenv("PATH");
+    if(path == NULL) {
+      cout << command << ": not found" << endl;  
+      return;
+    }
+    string pathString(path);
+    // TO DO
   }
-    
+
+
+  cout << command << ": not found" << endl;  
 }
 
 
