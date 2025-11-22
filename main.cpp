@@ -4,9 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <filesystem>
-
-
-
+#include <unistd.h>
 
 namespace fs = std::filesystem;
 using namespace std;
@@ -143,9 +141,12 @@ int main() {
     }
 
     // CHECK FUNCTION
-    if(BUILTINS.find(command) == BUILTINS.end()) 
+    if(BUILTINS.find(command) == BUILTINS.end()) {
+      // try executable
+      // if not:
       cout << command << ": not found" << endl;
-        
+    }
+    
     else {
       BUILTINS[command](args);
     }
