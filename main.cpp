@@ -65,22 +65,11 @@ bool isExecutable(fs::path& pathPath) {
   #endif
 }
 
-void type(const vector<string>& args) {
-  if (args.empty()) {
-        cout << "type: missing argument\n";
-        return;
-  }
-  const string command = args[0];
-
-  if (BUILTINS.find(command) != BUILTINS.end()) {
-        cout << command << " is a shell builtin" << endl;
-        return;
-  }
-  else {
-    char* path = getenv("PATH");
+string findExecutable(const string& command) {
+  char* path = getenv("PATH");
     if(path == NULL) {
       cout << command << ": not found" << endl;  
-      return;
+      return "";
     }
 
     string pathString(path);
@@ -94,20 +83,38 @@ void type(const vector<string>& args) {
             fs::path fullExtension = fullPath;
             fullExtension += extension;
             if (fs::exists(fullExtension)) {
-                cout << command << " is " << fullExtension.string() << endl;
-                return;
+                return fullExtension.string();
             }
         }
       #else
       if (isExecutable(fullPath)) {
-            cout << command << " is " << fullPath.string() << endl;
-            return;
+            return fullPath.string();
       }
       #endif
     }
   
-
+    return "";
 }
+
+void type(const vector<string>& args) {
+  if (args.empty()) {
+        cout << "type: missing argument\n";
+        return;
+  }
+  const string command = args[0];
+
+  if (BUILTINS.find(command) != BUILTINS.end()) {
+        cout << command << " is a shell builtin" << endl;
+        return;
+  }
+  else {
+    string executable = findExecutable(command);
+    if(!executable.empty())  {
+      cout << command << " is " << executable << endl;
+      return;
+    }
+
+  }
 
 
   cout << command << ": not found" << endl;  
